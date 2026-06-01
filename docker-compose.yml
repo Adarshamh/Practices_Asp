@@ -15,7 +15,7 @@ services:
       context: ./StudentManagement.Api
     container_name: studentapi-db
 
-    # Note : This variable is only used when the docker container database not for local 
+    # Note : this will inject automatically when we use docker else local connection string will be default
     environment:
       ConnectionStrings__DefaultConnection: "Server=student-sql;Database=StudentManagementDb;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True"
 
