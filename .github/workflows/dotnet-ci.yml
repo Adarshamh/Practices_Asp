@@ -39,8 +39,15 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/studentmanagement-api:latest ./StudentManagement.Api
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/studentmanagement-api:latest \
+            -t ${{ secrets.DOCKER_USERNAME }}/studentmanagement-api:${{ github.run_number }} \
+            ./StudentManagement.Api
 
-      - name: Push Docker Image
+      - name: Push Latest Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/studentmanagement-api:latest
+
+      - name: Push Version Image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/studentmanagement-api:${{ github.run_number }}
