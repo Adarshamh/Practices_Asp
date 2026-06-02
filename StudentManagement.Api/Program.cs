@@ -117,6 +117,18 @@ builder.Services.AddCors(options =>
 //});
 
 var app = builder.Build();
+
+// Apply pending migrations at startup
+// This ensures that the database schema is up-to-date with the latest changes in the code.
+// This is the standard Docker-friendly approach.
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+
+    dbContext.Database.Migrate();
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors("AngularPolicy");
