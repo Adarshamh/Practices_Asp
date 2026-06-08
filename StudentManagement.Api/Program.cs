@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using StudentManagement.Api.Data;
 using StudentManagement.Api.Helpers;
 using StudentManagement.Api.Interfaces;
@@ -11,6 +12,11 @@ using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -117,6 +123,7 @@ builder.Services.AddCors(options =>
 //});
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 // Apply pending migrations at startup
 // This ensures that the database schema is up-to-date with the latest changes in the code.
