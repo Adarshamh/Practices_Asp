@@ -1,4 +1,5 @@
-﻿using StudentManagement.Api.DTOs;
+﻿using Serilog;
+using StudentManagement.Api.DTOs;
 using StudentManagement.Api.Entities;
 using StudentManagement.Api.Helpers;
 using StudentManagement.Api.Interfaces;
@@ -31,6 +32,7 @@ public class AuthService : IAuthService
         };
         await _repository.RegisterUserAsync(user,cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
+        Log.Information("User registered successfully: UserEmail={@UserEmail}", request.Email);
     }
 
     public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request,CancellationToken cancellationToken)
@@ -39,16 +41,22 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
+            Log.Warning(
+                "Login failed: User not found for email {UserEmail}", 
+                request.Email);
             return null;
         }
 
         if (user.Password != request.Password)
         {
+            Log.Warning(
+                "Login failed: Incorrect password for email {UserEmail}", 
+                request.Email);
             return null;
         }
 
         var token = _jwtHelper.GenerateToken(user);
-
+        Log.Information("User logged in successfully: UserEmail={@UserEmail}", request.Email);
         return new LoginResponseDto
         {
             Token = token

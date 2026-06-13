@@ -2,6 +2,7 @@
 using StudentManagement.Api.Entities;
 using StudentManagement.Api.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace StudentManagement.Api.Services;
 
@@ -37,6 +38,7 @@ public class StudentService : IStudentService
         await _repository.AddStudentAsync(student,cancellationToken);
         _memoryCache.Remove(STUDENT_CACHE_KEY);
         await _repository.SaveChangesAsync(cancellationToken);
+        Log.Information("Student added successfully: StudentName={@Student}", student.Name);
     }
 
     public async Task<List<StudentDto>> GetStudentsAsync(CancellationToken cancellationToken)
@@ -62,6 +64,7 @@ public class StudentService : IStudentService
 
         var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
         _memoryCache.Set(STUDENT_CACHE_KEY,result,cacheOptions);
+        Log.Information("Student data retrieved and cached successfully. Total students: {StudentCount}", result.Count);
         return result;
     }
 }

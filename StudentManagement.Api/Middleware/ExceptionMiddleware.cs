@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using Serilog;
+using System;
+using System.Net;
 
 using System.Text.Json;
 
@@ -21,11 +23,12 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "Unhandled exception occurred");
             context.Response.ContentType ="application/json";
             context.Response.StatusCode =(int)HttpStatusCode.InternalServerError;
             var response = new
             {
-                message = ex.Message
+                message = "An unexpected error occurred"
             };
             var jsonResponse =JsonSerializer.Serialize(response);
             await context.Response.WriteAsync(jsonResponse);
